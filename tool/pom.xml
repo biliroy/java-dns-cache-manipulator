@@ -34,13 +34,6 @@
 			<version>2.5</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun</groupId>
-			<artifactId>tools</artifactId>
-			<version>${java.version}</version>
-			<scope>system</scope>
-			<systemPath>${tools-jar-path}</systemPath>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
@@ -141,15 +134,32 @@
 			</build>
 		</profile>
 		<profile>
+			<!--
+			How to fix tools.jar for jdk9, see:
+			Checkstyle cannot be built using JDK9 as tools.jar has been dropped
+			    https://github.com/checkstyle/checkstyle/issues/2905
+			Declare maven dependency on tools.jar to work on JDK 9
+			    http://stackoverflow.com/questions/35240134
+			-->
 			<id>standard-jdk</id>
 			<activation>
 				<file>
 					<exists>${java.home}/../lib/tools.jar</exists>
 				</file>
+				<jdk>[,1.9)</jdk>
 			</activation>
 			<properties>
 				<tools-jar-path>${java.home}/../lib/tools.jar</tools-jar-path>
 			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.sun</groupId>
+					<artifactId>tools</artifactId>
+					<version>${java.version}</version>
+					<scope>system</scope>
+					<systemPath>${tools-jar-path}</systemPath>
+				</dependency>
+			</dependencies>
 		</profile>
 		<profile>
 			<!-- Only for apple brewed jdk, tools.jar is put at ${java.home}/../Classes/classes.jar. -->
@@ -158,10 +168,20 @@
 				<file>
 					<exists>${java.home}/../Classes/classes.jar</exists>
 				</file>
+				<jdk>[,1.9)</jdk>
 			</activation>
 			<properties>
 				<tools-jar-path>${java.home}/../Classes/classes.jar</tools-jar-path>
 			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.sun</groupId>
+					<artifactId>tools</artifactId>
+					<version>${java.version}</version>
+					<scope>system</scope>
+					<systemPath>${tools-jar-path}</systemPath>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 </project>
